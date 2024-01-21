@@ -14,7 +14,7 @@ import {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDPtfJVBeJc8AwnY9TaQiVwnM30fHjHg9I",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "ontimeteetimes.firebaseapp.com",
   projectId: "ontimeteetimes",
   storageBucket: "ontimeteetimes.appspot.com",
@@ -53,8 +53,7 @@ export async function setSchedule({
   players,
   after,
   before,
-}: Schedule
-) {
+}: Schedule) {
   const colRef = collection(db, "schedule");
   await addDoc(colRef, { email, date, players, after, before });
 }
