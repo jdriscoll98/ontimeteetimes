@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { setSchedule } from "@/lib/firebase";
 import { formatTimestamp } from "@/lib/utils";
 import { Schedule } from "@/types";
 import { CalendarIcon } from "lucide-react";
@@ -34,15 +35,11 @@ export function ScheduleForm() {
   });
 
   const onSubmit = async (form: Schedule) => {
-    const res = await fetch("/api/schedule", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
-    const data = (await res.json()) as { success: boolean };
-    if (!data.success) {
+    try {
+      await setSchedule(form);
+    } catch (e) {
       alert("Schedule failed");
-    } else {
-      alert("Schedule succeeded");
+      return;
     }
   };
   return (

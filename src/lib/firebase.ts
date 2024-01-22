@@ -4,10 +4,14 @@ import { initializeApp } from "firebase/app";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
+  query,
   setDoc,
+  where,
 } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -56,4 +60,26 @@ export async function setSchedule({
 }: Schedule) {
   const colRef = collection(db, "schedule");
   await addDoc(colRef, { email, date, players, after, before });
+}
+
+export async function getSchedules({ email }: { email: string }) {
+  const colRef = collection(db, "schedule");
+  const q = query(colRef, where("email", "==", email));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => doc.data() as Schedule);
+}
+
+export async function deleteSchedule({ schedule }: { schedule: Schedule }) {
+  const colRef = collection(db, "schedule");
+  const q = query(
+    colRef,
+    where("email", "==", schedule.email),
+    where("date", "==", schedule.date),
+    where("players", "==", schedule.players),
+    where("after", "==", schedule.after),
+    where("before", "==", schedule.before)
+  );
+  const querySnapshot = await getDocs(q);
+  const promises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+  await Promise.allSettled(promises);
 }
