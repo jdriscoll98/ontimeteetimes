@@ -1,7 +1,8 @@
 import { Header } from "@/components/header";
-import "./globals.css";
 import { AppBar } from "@/components/app-bar";
 import Main from "@/components/main";
+import "./globals.css";
+
 
 export default function RootLayout({
   children,
@@ -9,8 +10,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="w-full h-full">
-      <body className="w-full h-full">
+    <html lang="en" className="w-screen h-full">
+      <body className="w-screen h-full flex flex-col">
         <Header />
         <Main>{children}</Main>
         <AppBar />

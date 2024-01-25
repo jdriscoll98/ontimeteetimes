@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 export function Bookings() {
   const { bookings, cancelBooking } = useBookings();
   return (
-    <main className="flex flex-col items-center p-4 bg-black text-white h-full">
+    <main className="flex flex-col items-center p-4 bg-brand text-white">
       <h1 className="text-2xl font-bold mb-4">Current Bookings</h1>
       <div className="w-full mt-6">
         <div className="border rounded-lg w-full">
@@ -23,10 +23,10 @@ export function Bookings() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Date</TableHead>
+                  <TableHead className="text-secondary">Date</TableHead>
                   <TableHead>Time</TableHead>
                   <TableHead>Players</TableHead>
-                  <TableHead className="w-[100px]">Cancel</TableHead>
+                  <TableHead className="w-[4rem]">Cancel</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -93,7 +93,10 @@ function useBookings() {
   }, []);
 
   const cancelBooking = (booking: any) => {
-    if (window.confirm("Are you sure you want to cancel this booking?") === false) return;
+    if (
+      window.confirm("Are you sure you want to cancel this booking?") === false
+    )
+      return;
     const formData = new FormData();
     formData.append("email", window.localStorage.getItem("email") || "");
     formData.append("id", booking.TTID);
@@ -112,5 +115,5 @@ function useBookings() {
   return {
     bookings,
     cancelBooking,
-  }
+  };
 }

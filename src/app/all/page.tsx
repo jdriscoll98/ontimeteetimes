@@ -14,12 +14,15 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
+import { formatTime } from "@/lib/utils";
 import { CalendarDaysIcon } from "lucide-react";
 import React, { useEffect } from "react";
 
 const All = () => {
   const [times, setTimes] = React.useState([]);
-  const [date, setDate] = React.useState(new Date());
+  const today = new Date();
+  if (today.getHours() >= 18) today.setDate(today.getDate() + 1);
+  const [date, setDate] = React.useState(today);
   useEffect(() => {
     if (!window.localStorage.getItem("email")) return;
     // mm-dd-yyyy
@@ -61,14 +64,11 @@ const All = () => {
     }
   }
   return (
-    <main className="flex flex-col items-center p-4 bg-black text-white h-full">
+    <main className="flex flex-col items-center p-4 bg-brand text-white">
       <h1 className="text-2xl font-bold mb-4">All Tee Times</h1>
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            className="w-[240px] justify-start text-left font-normal"
-            variant="outline"
-          >
+          <Button className="w-[240px] justify-start text-left font-normal">
             <CalendarDaysIcon className="mr-1 h-4 w-4 -translate-x-1" />
             {date.toDateString() || "Select a date"}
           </Button>
@@ -81,7 +81,7 @@ const All = () => {
           />
         </PopoverContent>
       </Popover>
-      <div className="w-full mt-6 overflow-scroll max-h-full">
+      <div className="w-full mt-6 overflow-scroll">
         <div className="border rounded-lg w-full">
           <div className="relative w-full overflow-auto">
             <Table>
@@ -97,11 +97,11 @@ const All = () => {
                 {!!times.length &&
                   times.map((time: any) => (
                     <TableRow key={time.time}>
-                      <TableCell className="font-medium">{time.time}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatTime(time.time.split(' ')[1])}</TableCell>
                       <TableCell>{time.available_spots}</TableCell>
                       <TableCell>{time.green_fee}</TableCell>
                       <TableCell>
-                        <button onClick={() => bookTime(time)}>Book</button>
+                        <Button variant={'secondary'} onClick={() => bookTime(time)}>Book</Button>
                       </TableCell>
                     </TableRow>
                   ))}

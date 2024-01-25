@@ -14,3 +14,10 @@ export function formatTimestamp(timestamp: number) {
     year: 'numeric',
   });
 }
+
+export function formatTime(time: string) {
+  const [hours, minutes] = time.split(':');
+  const suffix = Number(hours) >= 12 ? 'PM' : 'AM';
+  const hour = Number(hours) % 12 || 12;
+  return `${hour}:${minutes} ${suffix}`;
+}

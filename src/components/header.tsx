@@ -15,12 +15,12 @@ export function Header() {
   return (
     <header
       key="1"
-      className="h-14 flex items-center justify-between px-4 bg-black shadow-md text-white"
+      className="h-14 flex items-center justify-between px-4 bg-brand shadow-md text-white fixed top-0 w-full z-50"
     >
-      <div className="text-sm text-gray-600 dark:text-gray-400">{email}</div>
+      <div className="text-sm">{email}</div>
       <Button
         className="p-2"
-        variant="outline"
+        variant="ghost"
         onClick={() => {
           window.localStorage.removeItem("email");
           window.localStorage.removeItem("password");

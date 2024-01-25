@@ -7,14 +7,13 @@ import Link from "next/link";
 
 export function AppBar() {
   return (
-    <div className="flex lg:flex-row bg-black text-white border-t w-full fixed bottom-0">
+    <div className="flex lg:flex-row bg-brand text-white border-t w-full fixed bottom-0 h-14">
       <div className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
         <Link
           className="text-center flex items-center flex-col gap-[0.8rem]"
           href="/bookings"
         >
           <CalendarIcon />
-          <span className="text-sm font-medium">Bookings</span>
         </Link>
       </div>
       <div className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
@@ -23,7 +22,6 @@ export function AppBar() {
           href="/schedules"
         >
           <ClockIcon />
-          <span className="text-sm font-medium">Schedules</span>
         </Link>
       </div>
       <div className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
@@ -32,7 +30,6 @@ export function AppBar() {
           href="/"
         >
           <PlusIcon />
-          <span className="text-sm font-medium">New Schedule</span>
         </Link>
       </div>
       <div className="flex-1 flex items-center justify-center py-4 lg:py-6 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
@@ -41,7 +38,6 @@ export function AppBar() {
           href="/all"
         >
           <InfoIcon />
-          <span className="text-sm font-medium">All Tee Times</span>
         </Link>
       </div>
     </div>

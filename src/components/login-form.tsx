@@ -43,7 +43,7 @@ export function LoginForm() {
     }
   };
   return (
-    <Card className="w-full h-full max-w-sm rounded-none">
+    <Card className="w-full rounded-none">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>

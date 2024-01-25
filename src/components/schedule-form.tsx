@@ -43,10 +43,7 @@ export function ScheduleForm() {
     }
   };
   return (
-    <div
-      key="1"
-      className="mx-auto max-w-sm space-y-6 p-4 bg-black text-white h-full"
-    >
+    <div className="mx-auto  space-y-6 p-4 bg-brand text-white">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">Schedule a Tee Time</h1>
       </div>
@@ -59,7 +56,6 @@ export function ScheduleForm() {
                 <Button
                   className="w-[300px] justify-start text-left font-normal"
                   id="date"
-                  variant="outline"
                 >
                   <CalendarIcon className="mr-1 h-4 w-4 -translate-x-1" />
                   {formatTimestamp(form.date) || "Select a date"}
