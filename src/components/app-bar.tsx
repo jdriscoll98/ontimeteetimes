@@ -8,38 +8,38 @@ import Link from "next/link";
 export function AppBar() {
   return (
     <div className="flex lg:flex-row bg-brand text-white border-t w-full fixed bottom-0 h-14">
-      <div className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
-        <Link
-          className="text-center flex items-center flex-col gap-[0.8rem]"
-          href="/bookings"
-        >
+      <Link
+        href="/bookings"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+      >
+        <div className="text-center flex items-center flex-col gap-[0.8rem]">
           <CalendarIcon />
-        </Link>
-      </div>
-      <div className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
-        <Link
-          className="text-center flex items-center  flex-col gap-[0.8rem]"
-          href="/schedules"
-        >
+        </div>
+      </Link>
+      <Link
+        href="/schedules"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+      >
+        <div className="text-center flex items-center  flex-col gap-[0.8rem]">
           <ClockIcon />
-        </Link>
-      </div>
-      <div className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
-        <Link
-          className="text-center flex items-center  flex-col gap-[0.8rem]"
-          href="/"
-        >
+        </div>
+      </Link>
+      <Link
+        href="/"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+      >
+        <div className="text-center flex items-center  flex-col gap-[0.8rem]">
           <PlusIcon />
-        </Link>
-      </div>
-      <div className="flex-1 flex items-center justify-center py-4 lg:py-6 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700">
-        <Link
-          className="text-center flex items-center  flex-col gap-[0.8rem]"
-          href="/all"
-        >
+        </div>
+      </Link>
+      <Link
+        href="/all"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+      >
+        <div className="text-center flex items-center  flex-col gap-[0.8rem]">
           <InfoIcon />
-        </Link>
-      </div>
+        </div>
+      </Link>
     </div>
   );
 }

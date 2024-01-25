@@ -30,8 +30,8 @@ export function Bookings() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {!!bookings.length &&
-                  bookings.map((booking: any) => (
+                {!!bookings?.length &&
+                  bookings?.map((booking: any) => (
                     <TableRow key={booking.date_booked}>
                       <TableCell className="font-medium">
                         {new Date(booking.date_booked).toLocaleDateString(
@@ -60,10 +60,17 @@ export function Bookings() {
                       </TableCell>
                     </TableRow>
                   ))}
-                {!bookings.length && (
+                {bookings?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center">
                       No bookings found
+                    </TableCell>
+                  </TableRow>
+                )}
+                {typeof bookings === "undefined" && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center">
+                      Loading...
                     </TableCell>
                   </TableRow>
                 )}
@@ -77,7 +84,7 @@ export function Bookings() {
 }
 
 function useBookings() {
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState<any[] | undefined>(undefined);
 
   useEffect(() => {
     if (!window.localStorage.getItem("email")) return;
@@ -107,7 +114,7 @@ function useBookings() {
       const json = await res.json();
       if (json.success) {
         alert("Booking cancelled");
-        setBookings(bookings.filter((b: any) => b.TTID !== booking.TTID));
+        setBookings(bookings?.filter((b: any) => b.TTID !== booking.TTID));
       }
     });
   };

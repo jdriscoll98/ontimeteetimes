@@ -19,7 +19,7 @@ import { CalendarDaysIcon } from "lucide-react";
 import React, { useEffect } from "react";
 
 const All = () => {
-  const [times, setTimes] = React.useState([]);
+  const [times, setTimes] = React.useState<any[] | undefined>(undefined);
   const today = new Date();
   if (today.getHours() >= 18) today.setDate(today.getDate() + 1);
   const [date, setDate] = React.useState(today);
@@ -58,7 +58,7 @@ const All = () => {
     if (data.success) {
       alert("Booking succeeded");
       // remove the time from the list
-      setTimes(times.filter((t: any) => t.time !== time.time));
+      setTimes(times?.filter((t: any) => t.time !== time.time));
     } else {
       alert("Booking failed");
     }
@@ -94,21 +94,35 @@ const All = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {!!times.length &&
+                {!!times?.length &&
                   times.map((time: any) => (
                     <TableRow key={time.time}>
-                      <TableCell className="whitespace-nowrap">{formatTime(time.time.split(' ')[1])}</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {formatTime(time.time.split(" ")[1])}
+                      </TableCell>
                       <TableCell>{time.available_spots}</TableCell>
                       <TableCell>{time.green_fee}</TableCell>
                       <TableCell>
-                        <Button variant={'secondary'} onClick={() => bookTime(time)}>Book</Button>
+                        <Button
+                          variant={"secondary"}
+                          onClick={() => bookTime(time)}
+                        >
+                          Book
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
-                {!times.length && (
+                {times?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center">
                       No times found
+                    </TableCell>
+                  </TableRow>
+                )}
+                {typeof times === "undefined" && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center">
+                      Loading...
                     </TableCell>
                   </TableRow>
                 )}

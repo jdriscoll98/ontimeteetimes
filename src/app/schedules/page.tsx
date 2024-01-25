@@ -1,21 +1,21 @@
 "use client";
 
-import { deleteSchedule, getSchedules } from "@/lib/firebase";
-import React, { useEffect } from "react";
-import { Schedule } from "@/types";
+import { Button } from "@/components/ui/button";
 import {
-  TableHeader,
-  TableRow,
-  TableHead,
+  Table,
   TableBody,
   TableCell,
-  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { bookTime } from "@/lib/golf";
-import { formatTimestamp } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { deleteSchedule, getSchedules } from "@/lib/firebase";
+import { Schedule } from "@/types";
+import React, { useEffect } from "react";
 const Page = () => {
-  const [schedules, setSchedules] = React.useState<Schedule[]>([]);
+  const [schedules, setSchedules] = React.useState<Schedule[] | undefined>(
+    undefined
+  );
   useEffect(() => {
     const email = localStorage.getItem("email");
     if (!email) return;
@@ -42,8 +42,8 @@ const Page = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {!!schedules.length &&
-                  schedules.map((schedule: any) => (
+                {!!schedules?.length &&
+                  schedules?.map((schedule: Schedule) => (
                     <TableRow key={schedule.date}>
                       <TableCell className="whitespace-nowrap">
                         {new Date(schedule.date).toLocaleDateString("en-US", {
@@ -52,19 +52,29 @@ const Page = () => {
                           day: "numeric",
                         })}
                       </TableCell>
-                      <TableCell>{schedule.after}</TableCell>
-                      <TableCell>{schedule.before}</TableCell>
+                      <TableCell>{schedule.after}:00</TableCell>
+                      <TableCell>{schedule.before}:00</TableCell>
                       <TableCell>
-                        <Button onClick={() => deleteSchedule(schedule)} variant={'destructive'}>
+                        <Button
+                          onClick={() => deleteSchedule({ schedule })}
+                          variant={"destructive"}
+                        >
                           X
                         </Button>
                       </TableCell>
                     </TableRow>
                   ))}
-                {!schedules.length && (
+                {schedules?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center">
                       No schedules found
+                    </TableCell>
+                  </TableRow>
+                )}
+                {typeof schedules === "undefined" && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center">
+                      Loading...
                     </TableCell>
                   </TableRow>
                 )}

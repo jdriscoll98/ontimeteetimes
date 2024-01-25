@@ -37,6 +37,7 @@ export function ScheduleForm() {
   const onSubmit = async (form: Schedule) => {
     try {
       await setSchedule(form);
+      alert("Schedule successful");
     } catch (e) {
       alert("Schedule failed");
       return;
