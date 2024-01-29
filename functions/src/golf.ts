@@ -109,6 +109,6 @@ export async function bookTime({
     });
     return {success: true};
   } catch (e) {
-    return {success: false};
+    return {success: false, e };
   }
 }

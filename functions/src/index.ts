@@ -33,8 +33,9 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
     log(`Found ${teeTimes.length} tee times for ${date.toISOString()}`);
 
     // check if the before date is after the current date
-    if (now.getDate() > date.getDate()) {
+    if (now.getTime() > date.getTime()) {
       // delete the doc
+      log(`Deleting schedule for ${date.toISOString()} since it was in the past`);
       await doc.ref.delete();
       return;
     }
@@ -50,8 +51,13 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
       const res = await bookTime({ time, email: data.email });
       // check if the time was booked
       if (res?.success) {
-        await db.collection("schedule").doc(doc.id).delete();
+        // delete the doc
+        log(`Deleting schedule for ${date.toISOString()} since it was booked`);
+        await doc.ref.delete();
         break;
+      } else {
+        // log that the time was not booked
+        log(`Time ${time.time} was not booked: ${(res?.e as Error).message}`);
       }
     }
   });

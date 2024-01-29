@@ -34,7 +34,7 @@ export function Bookings() {
                   bookings?.map((booking: any) => (
                     <TableRow key={booking.date_booked}>
                       <TableCell className="font-medium">
-                        {new Date(booking.date_booked).toLocaleDateString(
+                        {new Date(booking.time).toLocaleDateString(
                           "en-US",
                           {
                             weekday: "short",
