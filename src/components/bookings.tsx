@@ -3,79 +3,75 @@
  * @see https://v0.dev/t/AXXN2EMtSrs
  */
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  NeoTable,
+  NeoTableBody,
+  NeoTableCell,
+  NeoTableHead,
+  NeoTableHeader,
+  NeoTableRow,
+} from "@/components/ui/neo-table";
 import { useEffect, useState } from "react";
+import NeoButton from "./ui/neo-button";
+import { XCircle } from "lucide-react";
 
 export function Bookings() {
   const { bookings, cancelBooking } = useBookings();
   return (
-    <main className="flex flex-col items-center p-4 bg-brand text-white">
-      <h1 className="text-2xl font-bold mb-4">Current Bookings</h1>
+    <main className="flex flex-col  p-4">
+      <h1 className="text-2xl font-bold ">Current Bookings</h1>
       <div className="w-full mt-6">
         <div className="border rounded-lg w-full">
           <div className="relative w-full overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-secondary">Date</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Players</TableHead>
-                  <TableHead className="w-[4rem]">Cancel</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <NeoTable>
+              <NeoTableHeader>
+                <NeoTableRow>
+                  <NeoTableHead>Date</NeoTableHead>
+                  <NeoTableHead>Time</NeoTableHead>
+                  <NeoTableHead>Players</NeoTableHead>
+                  <NeoTableHead>Cancel</NeoTableHead>
+                </NeoTableRow>
+              </NeoTableHeader>
+              <NeoTableBody>
                 {!!bookings?.length &&
                   bookings?.map((booking: any) => (
-                    <TableRow key={booking.date_booked}>
-                      <TableCell className="font-medium">
-                        {new Date(booking.time).toLocaleDateString(
-                          "en-US",
-                          {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                          }
-                        )}
-                      </TableCell>
-                      <TableCell>
+                    <NeoTableRow key={booking.date_booked}>
+                      <NeoTableCell className="font-medium">
+                        {new Date(booking.time).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </NeoTableCell>
+                      <NeoTableCell>
                         {new Date(booking.time).toLocaleTimeString("en-US", {
                           hour: "numeric",
                           minute: "numeric",
                         })}
-                      </TableCell>
-                      <TableCell>{booking.carts}</TableCell>
-                      <TableCell>
-                        <button
-                          onClick={() => cancelBooking(booking)}
-                          className="border-[1px] border-white rounded-full p-4 w-4 h-4 flex items-center justify-center"
-                        >
-                          X
-                        </button>
-                      </TableCell>
-                    </TableRow>
+                      </NeoTableCell>
+                      <NeoTableCell>{booking.carts}</NeoTableCell>
+                      <NeoTableCell>
+                        <NeoButton className='p-2' onClick={() => cancelBooking(booking)}>
+                          <XCircle />
+                        </NeoButton>
+                      </NeoTableCell>
+                    </NeoTableRow>
                   ))}
                 {bookings?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                  <NeoTableRow>
+                    <NeoTableCell colSpan={4} className="text-center">
                       No bookings found
-                    </TableCell>
-                  </TableRow>
+                    </NeoTableCell>
+                  </NeoTableRow>
                 )}
                 {typeof bookings === "undefined" && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                  <NeoTableRow>
+                    <NeoTableCell colSpan={4} className="text-center">
                       Loading...
-                    </TableCell>
-                  </TableRow>
+                    </NeoTableCell>
+                  </NeoTableRow>
                 )}
-              </TableBody>
-            </Table>
+              </NeoTableBody>
+            </NeoTable>
           </div>
         </div>
       </div>

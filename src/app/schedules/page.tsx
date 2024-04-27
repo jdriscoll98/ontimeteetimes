@@ -1,16 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import NeoButton from "@/components/ui/neo-button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  NeoTable,
+  NeoTableBody,
+  NeoTableCell,
+  NeoTableHead,
+  NeoTableHeader,
+  NeoTableRow,
+} from "@/components/ui/neo-table";
 import { deleteSchedule, getSchedules } from "@/lib/firebase";
 import { Schedule } from "@/types";
+import { XCircle } from "lucide-react";
 import React, { useEffect } from "react";
 const Page = () => {
   const [schedules, setSchedules] = React.useState<Schedule[] | undefined>(
@@ -26,60 +28,60 @@ const Page = () => {
     fetchSchedules();
   }, []);
   return (
-    <main className="flex flex-col items-center p-4 bg-brand text-white h-full">
+    <main className="flex flex-col items-center p-4  h-full">
       <h1 className="text-2xl font-bold mb-4">All Schedules</h1>
 
       <div className="w-full mt-6 overflow-scroll max-h-full">
         <div className="border rounded-lg w-full">
           <div className="relative w-full overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>After</TableHead>
-                  <TableHead>Before</TableHead>
-                  <TableHead className="w-[100px]">Cancel</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <NeoTable>
+              <NeoTableHeader>
+                <NeoTableRow>
+                  <NeoTableHead>Date</NeoTableHead>
+                  <NeoTableHead>After</NeoTableHead>
+                  <NeoTableHead>Before</NeoTableHead>
+                  <NeoTableHead>Cancel</NeoTableHead>
+                </NeoTableRow>
+              </NeoTableHeader>
+              <NeoTableBody>
                 {!!schedules?.length &&
                   schedules?.map((schedule: Schedule) => (
-                    <TableRow key={schedule.date}>
-                      <TableCell className="whitespace-nowrap">
+                    <NeoTableRow key={schedule.date}>
+                      <NeoTableCell className="whitespace-nowrap">
                         {new Date(schedule.date).toLocaleDateString("en-US", {
                           weekday: "short",
                           month: "short",
                           day: "numeric",
                         })}
-                      </TableCell>
-                      <TableCell>{schedule.after}:00</TableCell>
-                      <TableCell>{schedule.before}:00</TableCell>
-                      <TableCell>
-                        <Button
+                      </NeoTableCell>
+                      <NeoTableCell>{schedule.after}:00</NeoTableCell>
+                      <NeoTableCell>{schedule.before}:00</NeoTableCell>
+                      <NeoTableCell>
+                        <NeoButton
                           onClick={() => deleteSchedule({ schedule })}
-                          variant={"destructive"}
+                          className="p-2"
                         >
-                          X
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                          <XCircle />
+                        </NeoButton>
+                      </NeoTableCell>
+                    </NeoTableRow>
                   ))}
                 {schedules?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                  <NeoTableRow>
+                    <NeoTableCell colSpan={4} className="text-center">
                       No schedules found
-                    </TableCell>
-                  </TableRow>
+                    </NeoTableCell>
+                  </NeoTableRow>
                 )}
                 {typeof schedules === "undefined" && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                  <NeoTableRow>
+                    <NeoTableCell colSpan={4} className="text-center">
                       Loading...
-                    </TableCell>
-                  </TableRow>
+                    </NeoTableCell>
+                  </NeoTableRow>
                 )}
-              </TableBody>
-            </Table>
+              </NeoTableBody>
+            </NeoTable>
           </div>
         </div>
       </div>

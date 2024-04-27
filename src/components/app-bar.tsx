@@ -7,10 +7,10 @@ import Link from "next/link";
 
 export function AppBar() {
   return (
-    <div className="flex lg:flex-row bg-brand text-white border-t w-full fixed bottom-0 h-14">
+    <div className="flex lg:flex-row bg-white text-black border-t-4 border-t-black w-full fixed bottom-0 h-14">
       <Link
         href="/bookings"
-        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer "
       >
         <div className="text-center flex items-center flex-col gap-[0.8rem]">
           <CalendarIcon />
@@ -18,7 +18,7 @@ export function AppBar() {
       </Link>
       <Link
         href="/schedules"
-        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer "
       >
         <div className="text-center flex items-center  flex-col gap-[0.8rem]">
           <ClockIcon />
@@ -26,7 +26,7 @@ export function AppBar() {
       </Link>
       <Link
         href="/"
-        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="flex-1 flex items-center justify-center py-4 lg:py-6 border-r lg:border-r-0 lg:border-b cursor-pointer"
       >
         <div className="text-center flex items-center  flex-col gap-[0.8rem]">
           <PlusIcon />

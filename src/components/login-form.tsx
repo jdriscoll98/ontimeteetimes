@@ -15,12 +15,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
+import NeoButton from "./ui/neo-button";
+import NeoInput from "./ui/neo-input";
+import { LoaderIcon } from "lucide-react";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = async ({
     email,
@@ -29,58 +33,69 @@ export function LoginForm() {
     email: string;
     password: string;
   }) => {
+    setError("");
+
+    if (!email) {
+      setError("Email is required");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await fetch("/api/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      const data = (await res.json()) as { success: boolean };
+      if (!data.success) {
+        setError("Login failed");
+      } else {
+        window.localStorage.setItem("email", email);
+        window.location.reload();
+      }
+    } catch (e) {
+      setError("Login failed");
+    } finally {
+      setLoading(false);
+    }
     const res = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
     const data = (await res.json()) as { success: boolean };
     if (!data.success) {
-      alert("Login failed");
+      setError("Login failed");
     } else {
-      alert("Login succeeded")
       window.localStorage.setItem("email", email);
       window.location.reload();
     }
   };
   return (
-    <Card className="w-full rounded-none">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            placeholder="m@example.com"
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            required
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button
-          className="w-full"
-          onClick={() => onSubmit({ email, password })}
-        >
-          Sign in
-        </Button>
-      </CardFooter>
-    </Card>
+    <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-2xl font-semibold">Login</h1>
+      <span>Enter the same login you use for Jax Beach</span>
+      {error && <div className="text-red-500">{error}</div>}
+      <NeoInput
+        required
+        type='email'
+        value={email}
+        setValue={setEmail}
+        placeholder={"Email"}
+      />
+      <NeoInput
+        required
+        type="password"
+        value={password}
+        setValue={setPassword}
+        placeholder={"Password"}
+      />
+      <NeoButton onClick={() => onSubmit({ email, password })}>
+        {loading ? <LoaderIcon /> : "Submit"}
+      </NeoButton>
+    </div>
   );
 }

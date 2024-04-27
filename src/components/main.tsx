@@ -9,7 +9,7 @@ const Main = ({ children }: { children: React.ReactNode }) => {
     const email = window.localStorage.getItem("email");
     if (email) setEmail(email);
   }, []);
-  return <div className="grow py-14 bg-brand">{email ? children : <LoginForm />}</div>;
+  return <div className="grow py-14 bg-bg">{email ? children : <LoginForm />}</div>;
 };
 
 export default Main;

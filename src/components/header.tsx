@@ -5,6 +5,7 @@
  */
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import NeoButton from "./ui/neo-button";
 
 export function Header() {
   const [email, setEmail] = useState("");
@@ -15,22 +16,21 @@ export function Header() {
   return (
     <header
       key="1"
-      className="h-14 flex items-center justify-between px-4 bg-brand shadow-md text-white fixed top-0 w-full z-50"
+      className="h-16 flex items-center justify-between px-4 bg-white shadow-md text-black fixed top-0 w-full z-50 border-b-4 border-black"
     >
       <div className="text-sm">{email}</div>
-      <Button
-        className="p-2"
-        variant="ghost"
-        onClick={() => {
-          window.localStorage.removeItem("email");
-          window.localStorage.removeItem("password");
-          window.location.reload();
-        }}
-      >
-        Switch User
-      </Button>
+      {window.localStorage.getItem("email") && (
+        <NeoButton
+          className="p-2"
+          onClick={() => {
+            window.localStorage.removeItem("email");
+            window.localStorage.removeItem("password");
+            window.location.reload();
+          }}
+        >
+          Switch User
+        </NeoButton>
+      )}
     </header>
   );
 }
-
-
