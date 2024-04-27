@@ -32,14 +32,6 @@ export function AppBar() {
           <PlusIcon />
         </div>
       </Link>
-      <Link
-        href="/all"
-        className="flex-1 flex items-center justify-center py-4 lg:py-6 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-      >
-        <div className="text-center flex items-center  flex-col gap-[0.8rem]">
-          <InfoIcon />
-        </div>
-      </Link>
     </div>
   );
 }
