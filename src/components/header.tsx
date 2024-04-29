@@ -19,9 +19,9 @@ export function Header() {
       className="h-16 flex items-center justify-between px-4 bg-white shadow-md text-black fixed top-0 w-full z-50 border-b-4 border-black"
     >
       <div className="text-sm">{email}</div>
-      {window.localStorage.getItem("email") && (
+      {window?.localStorage.getItem("email") && (
         <NeoButton
-          className="p-2"
+          className="p-2 bg-white"
           onClick={() => {
             window.localStorage.removeItem("email");
             window.localStorage.removeItem("password");

@@ -13,7 +13,7 @@ export default function Input({
   value,
   setValue,
   placeholder,
-  ...rest,
+  ...rest
 }: Props) {
   return (
     <input
@@ -27,7 +27,8 @@ export default function Input({
       onChange={(e) => {
         setValue(e.target.value);
       }}
-      aria-label={placeholder}{
+      aria-label={placeholder}
+      {
         ...rest
       }
     />

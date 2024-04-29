@@ -18,6 +18,7 @@ const Page = () => {
   const [schedules, setSchedules] = React.useState<Schedule[] | undefined>(
     undefined
   );
+  const [loading, setLoading] = React.useState("");
   useEffect(() => {
     const email = localStorage.getItem("email");
     if (!email) return;
@@ -27,6 +28,13 @@ const Page = () => {
     };
     fetchSchedules();
   }, []);
+
+  async function refetchSchedules() {
+    const schedules = await getSchedules({
+      email: localStorage.getItem("email")!,
+    });
+    setSchedules(schedules);
+  }
   return (
     <main className="flex flex-col items-center p-4  h-full">
       <h1 className="text-2xl font-bold mb-4">All Schedules</h1>
@@ -58,8 +66,18 @@ const Page = () => {
                       <NeoTableCell>{schedule.before}:00</NeoTableCell>
                       <NeoTableCell>
                         <NeoButton
-                          onClick={() => deleteSchedule({ schedule })}
-                          className="p-2"
+                          onClick={async () => {
+                            try {
+                              setLoading("deleteSchedule");
+                              await deleteSchedule({ schedule });
+                              refetchSchedules();
+                            } catch (e) {
+                              alert((e as Error).message);
+                            } finally {
+                              setLoading("");
+                            }
+                          }}
+                          className="p-2 bg-white"
                         >
                           <XCircle />
                         </NeoButton>

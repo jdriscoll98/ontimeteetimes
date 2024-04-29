@@ -1,14 +1,16 @@
 import { ClassValue } from 'clsx'
 
 import { cn } from '@/lib/utils'
+import { LoaderIcon } from 'lucide-react'
 
 type Props = {
   className?: ClassValue
   children: React.ReactNode
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
+  loading?: boolean
 }
 
-export default function NeoButton({ className, children, onClick }: Props) {
+export default function NeoButton({ className, children, onClick, loading }: Props) {
   return (
     <button
       role="button"
@@ -19,7 +21,7 @@ export default function NeoButton({ className, children, onClick }: Props) {
         className,
       )}
     >
-      {children}
+      {loading ? <LoaderIcon /> : children}
     </button>
   )
 }

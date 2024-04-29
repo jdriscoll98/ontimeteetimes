@@ -12,6 +12,8 @@ const config: Config = {
         bg: "#daf5f0",
         main: "#7fbc8c",
         mainAccent: "#58a769", // not needed for shadcn
+        danger: '#ff5454',
+        success: '#3cd39d'
       },
       borderRadius: {
         base: "20px",

@@ -81,7 +81,7 @@ export function LoginForm() {
       {error && <div className="text-red-500">{error}</div>}
       <NeoInput
         required
-        type='email'
+        type="email"
         value={email}
         setValue={setEmail}
         placeholder={"Email"}
@@ -93,8 +93,11 @@ export function LoginForm() {
         setValue={setPassword}
         placeholder={"Password"}
       />
-      <NeoButton onClick={() => onSubmit({ email, password })}>
-        {loading ? <LoaderIcon /> : "Submit"}
+      <NeoButton
+        onClick={() => onSubmit({ email, password })}
+        loading={loading}
+      >
+        Submit
       </NeoButton>
     </div>
   );

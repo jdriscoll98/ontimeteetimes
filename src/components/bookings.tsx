@@ -50,7 +50,7 @@ export function Bookings() {
                       </NeoTableCell>
                       <NeoTableCell>{booking.carts}</NeoTableCell>
                       <NeoTableCell>
-                        <NeoButton className='p-2' onClick={() => cancelBooking(booking)}>
+                        <NeoButton className='p-2 bg-white' onClick={() => cancelBooking(booking)}>
                           <XCircle />
                         </NeoButton>
                       </NeoTableCell>
