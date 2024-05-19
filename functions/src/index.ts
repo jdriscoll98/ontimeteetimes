@@ -1,10 +1,10 @@
+import * as dayjs from "dayjs";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { onSchedule } from "firebase-functions/v2/scheduler";
 import { log } from "firebase-functions/logger";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 import { bookTime, getAllTeeTimes } from "./golf";
 import { Schedule } from "./types";
-
 initializeApp();
 export const db = getFirestore();
 
@@ -22,7 +22,7 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
     const date = new Date(data.date);
     // todo optimize this by fetching all tee times for all schedule dates before this loop and using a map to get the tee times for each date
     const teeTimes = await getAllTeeTimes({
-      booking_class_id: 10245,
+      booking_class_id: 10426,
       date: date.toLocaleDateString("en-us", {
         // mm-dd-yyyy
         year: "numeric",
@@ -31,11 +31,14 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
       }),
     });
     log(`Found ${teeTimes.length} tee times for ${date.toISOString()}`);
+    if (teeTimes.lnegth === 0) return null;
 
     // check if the before date is after the current date
     if (now.getTime() > date.getTime()) {
       // delete the doc
-      log(`Deleting schedule for ${date.toISOString()} since it was in the past`);
+      log(
+        `Deleting schedule for ${date.toISOString()} since it was in the past`
+      );
       await doc.ref.delete();
       return;
     }
@@ -60,6 +63,82 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
         log(`Time ${time.time} was not booked: ${(res?.e as Error).message}`);
       }
     }
+    return;
   });
   await Promise.all(promises);
 });
+
+const bookEarliest = async () => {
+  //   only run this on thursday, friday and saturday
+  const day = new Date().getDay();
+  if (![4, 5, 6].includes(day)) {
+    console.log("Not running on day", day);
+    return;
+  }
+  let date: dayjs.Dayjs | string = dayjs(new Date())
+    .add(3, "week")
+    .add(1, "day");
+
+  date = date.format("MM-DD-YYYY");
+
+  // while not 7pm est wait
+  let teeTimes = [];
+  while (!teeTimes.length) {
+    teeTimes = await getAllTeeTimes({
+      booking_class_id: 10426,
+      date,
+    });
+    console.log("Waiting for tee times");
+    // if current time is 7:01pm est, break
+    if (dayjs().format("HH") === "19" && dayjs().format("mm") === "01") {
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  const teeTeeRequest = {
+    teesheet_id: "2912",
+    teesheet_holes: "18",
+    course_id: "19905",
+    course_name: "Jacksonville Beach Golf Club",
+    schedule_name: "Jacksonville Beach Golf",
+    schedule_id: "2912",
+    holes: 18,
+    booking_class_id: 10246,
+    players: 4,
+  };
+  const firstFiveTeeTimes = teeTimes
+    .slice(0, 2)
+    .map((teeTime: any) => teeTime.time);
+  // try to book the first 5 tee times
+  const promises = firstFiveTeeTimes.map((time: any) => {
+    return bookTime({
+      time: {
+        ...teeTeeRequest,
+        time,
+      },
+      email: "WilliamSilva123@gmail.com",
+    });
+  });
+  const res = await Promise.allSettled(promises);
+  // log results
+  res.forEach((result, index) => {
+    if (result.status === "fulfilled") {
+      console.log("Successfully booked tee time for", firstFiveTeeTimes[index]);
+    } else {
+      console.log(
+        "Failed to book tee time for",
+        firstFiveTeeTimes[index],
+        result.reason
+      );
+    }
+  });
+};
+
+export const scheduleBookEarliest = onSchedule(
+  {
+    // schedule: "59 18 * * 4-6", // thurs-saturday
+    schedule: "59 18 * * *",
+    timeZone: "America/New_York",
+  },
+  bookEarliest
+);

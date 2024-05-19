@@ -34,3 +34,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+https://foreupsoftware.com/index.php/api/booking/times?time=all&date=05-25-2024&holes=all&players=0&booking_class=10426&schedule_id=2912&schedule_ids%5B%5D=2912&specials_only=0&api_key=no_limits
+
+https://foreupsoftware.com/index.php/api/booking/times?time=all&date=05-25-2024&holes=all&players=0&booking_class=10426&schedule_id=2912&schedule_ids%5B%5D=2912&specials_only=0&api_key=no_limits

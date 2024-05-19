@@ -4,7 +4,7 @@
  */
 import { setSchedule } from "@/lib/firebase";
 import { Schedule } from "@/types";
-import { SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 import NeoButton from "./ui/neo-button";
 import Textarea from "./ui/textarea";
 import { getSchedule } from "@/lib/openai";
@@ -51,6 +51,9 @@ export function ScheduleForm() {
             {previewSchedule.before !== 23 && (
               <div>Before: {previewSchedule.before}:00</div>
             )}
+            {previewSchedule.players && (
+              <div>Players : {previewSchedule.players}</div>
+            )}
           </div>
         </div>
       )}
@@ -76,7 +79,7 @@ export function ScheduleForm() {
                   ...previewSchedule,
                   email: localStorage.getItem("email") ?? "",
                 });
-                window.location.href = '/schedules';
+                window.location.href = "/schedules";
               } catch (e) {
                 setError((e as Error).message);
               } finally {

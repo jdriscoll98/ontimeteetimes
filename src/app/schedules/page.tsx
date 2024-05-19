@@ -46,6 +46,7 @@ const Page = () => {
               <NeoTableHeader>
                 <NeoTableRow>
                   <NeoTableHead>Date</NeoTableHead>
+                  <NeoTableHead>Players</NeoTableHead>
                   <NeoTableHead>After</NeoTableHead>
                   <NeoTableHead>Before</NeoTableHead>
                   <NeoTableHead>Cancel</NeoTableHead>
@@ -62,6 +63,7 @@ const Page = () => {
                           day: "numeric",
                         })}
                       </NeoTableCell>
+                      <NeoTableCell>{schedule.players}</NeoTableCell>
                       <NeoTableCell>{schedule.after}:00</NeoTableCell>
                       <NeoTableCell>{schedule.before}:00</NeoTableCell>
                       <NeoTableCell>

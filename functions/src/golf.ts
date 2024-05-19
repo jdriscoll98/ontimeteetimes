@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAuth } from "./firebase";
+import { log } from "firebase-functions/logger";
 
 const LOGIN_URL =
   "https://foreupsoftware.com/index.php/api/booking/users/login";
@@ -74,11 +75,13 @@ export async function getAllTeeTimes({
   date: string;
 }) {
   const url = `${TIMES_URL(date, booking_class_id)}`;
+  log("URL", url);
   const res = await axios.get(url, {
     headers: {
       "Content-Type": "application/json",
     },
   });
+  log("res: ", res)
   return res.data;
 }
 
