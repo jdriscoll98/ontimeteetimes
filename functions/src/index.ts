@@ -46,7 +46,7 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
     const times = teeTimes.filter((teeTime: any) => {
       const date = new Date(teeTime.time);
       const hours = date.getHours();
-      return hours > data.after && hours < data.before;
+      return hours > data.after && hours < data.before && teeTime.available_spots >= data.players;
     });
     // loop through each time
     for (const time of times) {
