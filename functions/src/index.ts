@@ -3,7 +3,12 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { log } from "firebase-functions/logger";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { bookTime, getAllTeeTimes } from "./golf";
+import {
+  bookTeeTimeWithAuth,
+  bookTime,
+  getAllTeeTimes,
+  getAuthToken,
+} from "./golf";
 import { Schedule } from "./types";
 initializeApp();
 export const db = getFirestore();
@@ -42,11 +47,15 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
       await doc.ref.delete();
       return;
     }
-    // check if any of the tee times fall within the after and before times
+    // check if any of the tee times fall within the after and before times and have enough spots
     const times = teeTimes.filter((teeTime: any) => {
       const date = new Date(teeTime.time);
       const hours = date.getHours();
-      return hours > data.after && hours < data.before && teeTime.available_spots >= data.players;
+      return (
+        hours > data.after &&
+        hours < data.before &&
+        teeTime.available_spots >= data.players
+      );
     });
     // loop through each time
     for (const time of times) {
@@ -69,12 +78,16 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
 });
 
 const bookEarliest = async () => {
+  const data = await getAuthToken({
+    email: "Williamsilva123@gmail.com",
+    password: "Golf123",
+  });
   //   only run this on thursday, friday and saturday
-  const day = new Date().getDay();
-  if (![4, 5, 6].includes(day)) {
-    console.log("Not running on day", day);
-    return;
-  }
+  // const day = new Date().getDay();
+  // if (![4, 5, 6].includes(day)) {
+  //   console.log("Not running on day", day);
+  //   return;
+  // }
   let date: dayjs.Dayjs | string = dayjs(new Date())
     .add(3, "week")
     .add(1, "day");
@@ -111,13 +124,13 @@ const bookEarliest = async () => {
     .map((teeTime: any) => teeTime.time);
   // try to book the first 5 tee times
   const promises = firstFiveTeeTimes.map((time: any) => {
-    return bookTime({
-      time: {
+    return bookTeeTimeWithAuth(
+      {
         ...teeTeeRequest,
         time,
       },
-      email: "WilliamSilva123@gmail.com",
-    });
+      data.data.jwt
+    );
   });
   const res = await Promise.allSettled(promises);
   // log results

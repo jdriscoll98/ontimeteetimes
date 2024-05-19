@@ -115,3 +115,20 @@ export async function bookTime({
     return {success: false, e };
   }
 }
+
+
+export async function bookTeeTimeWithAuth(teeTime: any, token: string) {
+  try {
+    await axios.post(RESERVATION_URL, teeTime, {
+      headers: {
+        "Content-Type": "application/json",
+        "Api-Key": "no_limits",
+        "X-Authorization": `Bearer ${token}`,
+      },
+    });
+    return true;
+  } catch (e) {
+    console.log((e as any).response.data.msg);
+    return false;
+  }
+}
