@@ -79,7 +79,7 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
 
 const bookEarliest = async () => {
   const data = await getAuthToken({
-    email: "Williamsilva123@gmail.com",
+    email: "Wsilva123@gmail.com",
     password: "Golf123",
   });
   //   only run this on thursday, friday and saturday
