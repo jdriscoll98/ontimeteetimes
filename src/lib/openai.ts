@@ -8,6 +8,8 @@ const openai = new OpenAI({
 
 export async function getSchedule(input: string): Promise<Schedule> {
   const currentDate = new Date()
+    .toLocaleString("en-US", { timeZone: "America/New_York" })
+    .split(",")[0];
   // set timezone to EST
 
   const response = await openai.chat.completions.create({

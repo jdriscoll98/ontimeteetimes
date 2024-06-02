@@ -1,14 +1,13 @@
 import axios from "axios";
 import { getAuth } from "./firebase";
-import { log } from "firebase-functions/logger";
+import { error } from "firebase-functions/logger";
 
 const LOGIN_URL =
   "https://foreupsoftware.com/index.php/api/booking/users/login";
 const RESERVATION_URL =
   "https://foreupsoftware.com/index.php/api/booking/users/reservations";
 const TIMES_URL = (date: string, booking_class_id: number) =>
-  `https://foreupsoftware.com/index.php/api/booking/times?time=all&date=${date}&holes=18&players=1&booking_class=${booking_class_id}&schedule_id=2912&schedule_ids%5B%5D=2912&specials_only=0&api_key=no_limits`;
-
+  `https://foreupsoftware.com/index.php/api/booking/times?time=all&date=${date}&holes=all&players=0&booking_class=${booking_class_id}&schedule_id=2912&schedule_ids%5B%5D=2912&specials_only=0&api_key=no_limits`;
 export async function getAuthToken({
   email,
   password,
@@ -70,18 +69,21 @@ export async function cancelBooking({
 export async function getAllTeeTimes({
   booking_class_id,
   date,
+  auth
 }: {
   booking_class_id: number;
   date: string;
+  auth?: { jwt: string; cookie?: string[] };
 }) {
   const url = `${TIMES_URL(date, booking_class_id)}`;
-  log("URL", url);
   const res = await axios.get(url, {
     headers: {
       "Content-Type": "application/json",
+      "Api-Key": "no_limits",
+      "X-Authorization": `Bearer ${auth?.jwt}`,
+      "Cookie": auth?.cookie?.join("; "),
     },
   });
-  log("res: ", res)
   return res.data;
 }
 
@@ -117,18 +119,19 @@ export async function bookTime({
 }
 
 
-export async function bookTeeTimeWithAuth(teeTime: any, token: string) {
+export async function bookTeeTimeWithAuth(teeTime: any, token: string, cookie?: string[]) {
   try {
     await axios.post(RESERVATION_URL, teeTime, {
       headers: {
         "Content-Type": "application/json",
         "Api-Key": "no_limits",
         "X-Authorization": `Bearer ${token}`,
+        "Cookie": cookie?.join("; "),
       },
     });
     return true;
   } catch (e) {
-    console.log((e as any).response.data.msg);
+    error('Error booking tee time: ', e);
     return false;
   }
 }
