@@ -2,15 +2,15 @@
 import { Schedule } from "@/types";
 import OpenAI from "openai";
 import dayjs from "dayjs";
+import { getCurrentDateInTimezone } from "./utils";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function getSchedule(input: string): Promise<Schedule> {
   // current date in est 
-  const currentDate = dayjs().set('hours', dayjs().hour() - dayjs().utcOffset() / 60).format('YYYY-MM-DDTHH:mm:ss')
+  const currentDate = getCurrentDateInTimezone("America/New_York").split(" ")[0]
 
-  console.log(currentDate)
   const response = await openai.chat.completions.create({
     model: "gpt-4-turbo",
     messages: [
@@ -45,11 +45,9 @@ export async function getSchedule(input: string): Promise<Schedule> {
       players: number;
     };
     if (!requestedSchedule) throw new Error("No requested schedule");
-    const date = new Date(
-      2024,
-      requestedSchedule.month - 1,
-      requestedSchedule.date
-    );
+    const date = new Date();
+    date.setMonth(requestedSchedule.month - 1);
+    date.setDate(requestedSchedule.date);
     if (date.getTime() < Date.now())
       throw new Error("Requested date is in the past");
     return {
