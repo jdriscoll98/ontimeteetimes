@@ -1,17 +1,16 @@
 "use server";
 import { Schedule } from "@/types";
 import OpenAI from "openai";
-
+import dayjs from "dayjs";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function getSchedule(input: string): Promise<Schedule> {
-  const currentDate = new Date()
-    .toLocaleString("en-US", { timeZone: "America/New_York" })
-    .split(",")[0];
-  // set timezone to EST
+  // current date in est 
+  const currentDate = dayjs().set('hours', dayjs().hour() - dayjs().utcOffset() / 60).format('YYYY-MM-DDTHH:mm:ss')
 
+  console.log(currentDate)
   const response = await openai.chat.completions.create({
     model: "gpt-4-turbo",
     messages: [
