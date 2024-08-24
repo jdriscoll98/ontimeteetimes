@@ -8,6 +8,7 @@ const RESERVATION_URL =
   "https://foreupsoftware.com/index.php/api/booking/users/reservations";
 const TIMES_URL = (date: string, booking_class_id: number) =>
   `https://foreupsoftware.com/index.php/api/booking/times?time=all&date=${date}&holes=all&players=0&booking_class=${booking_class_id}&schedule_id=2912&schedule_ids%5B%5D=2912&specials_only=0&api_key=no_limits`;
+
 export async function getAuthToken({
   email,
   password,
@@ -32,11 +33,11 @@ export async function getAuthToken({
   return res;
 }
 
-export async function getBookings({email}: { email: string }) {
-  const auth = await getAuth({email});
+export async function getBookings({ email }: { email: string }) {
+  const auth = await getAuth({ email });
   if (!auth) return null;
   const {
-    data: {reservations},
+    data: { reservations },
   } = await getAuthToken(auth);
   return [...reservations];
 }
@@ -49,18 +50,18 @@ export async function cancelBooking({
   id: string;
 }) {
   // delete request to the reservation url with the id
-  const auth = await getAuth({email});
+  const auth = await getAuth({ email });
   if (!auth) return null;
   const {
-    data: {jwt},
-    headers: {"set-cookie": cookie},
+    data: { jwt },
+    headers: { "set-cookie": cookie },
   } = await getAuthToken(auth);
   const res = await axios.delete(`${RESERVATION_URL}/${id}`, {
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${jwt}`,
+      Authorization: `Bearer ${jwt}`,
       "Api-Key": "no_limits",
-      "Cookie": cookie?.join("; "),
+      Cookie: cookie?.join("; "),
     },
   });
   return res.data;
@@ -69,69 +70,80 @@ export async function cancelBooking({
 export async function getAllTeeTimes({
   booking_class_id,
   date,
-  auth
+  auth,
 }: {
   booking_class_id: number;
   date: string;
   auth?: { jwt: string; cookie?: string[] };
 }) {
   const url = `${TIMES_URL(date, booking_class_id)}`;
-  const res = await axios.get(url, {
-    headers: {
-      "Content-Type": "application/json",
-      "Api-Key": "no_limits",
-      "X-Authorization": `Bearer ${auth?.jwt}`,
-      "Cookie": auth?.cookie?.join("; "),
-    },
-  });
-  return res.data;
-}
-
-export async function bookTime({
-  time,
-  email,
-}: {
-  time: any;
-  email: string;
-}) {
-  const auth = await getAuth({email});
-  if (!auth) return null;
-  const {
-    data: {jwt},
-    headers: {"set-cookie": cookie},
-  } = await getAuthToken(auth);
   try {
-    await axios.post(RESERVATION_URL, {
-      ...time,
-      players: time.available_spots,
-    }, {
+    const res = await axios.get(url, {
       headers: {
         "Content-Type": "application/json",
         "Api-Key": "no_limits",
-        "X-Authorization": `Bearer ${jwt}`,
-        "Cookie": cookie?.join("; "),
+        ...(auth?.jwt && {
+          "X-Authorization": `Bearer ${auth?.jwt}`,
+        }),
+        ...(auth?.cookie && {
+          Cookie: auth?.cookie?.join("; "),
+        }),
       },
     });
-    return {success: true};
+    return res.data;
   } catch (e) {
-    return {success: false, e };
+    error("Error getting tee times with url: ", url, e);
+    return [];
   }
 }
 
+export async function bookTime({ time, email }: { time: any; email: string }) {
+  try {
+    const auth = await getAuth({ email });
+    if (!auth) return null;
+    const {
+      data: { jwt },
+      headers: { "set-cookie": cookie },
+    } = await getAuthToken(auth);
+    await axios.post(
+      RESERVATION_URL,
+      {
+        ...time,
+        players: time.available_spots,
+        holes: "18",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Api-Key": "no_limits",
+          "X-Authorization": `Bearer ${jwt}`,
+          Cookie: cookie?.join("; "),
+        },
+      }
+    );
+    return { success: true };
+  } catch (e) {
+    return { success: false, e };
+  }
+}
 
-export async function bookTeeTimeWithAuth(teeTime: any, token: string, cookie?: string[]) {
+export async function bookTeeTimeWithAuth(
+  teeTime: any,
+  token: string,
+  cookie?: string[]
+) {
   try {
     await axios.post(RESERVATION_URL, teeTime, {
       headers: {
         "Content-Type": "application/json",
         "Api-Key": "no_limits",
         "X-Authorization": `Bearer ${token}`,
-        "Cookie": cookie?.join("; "),
+        Cookie: cookie?.join("; "),
       },
     });
     return true;
   } catch (e) {
-    error('Error booking tee time: ', e);
+    error("Error booking tee time: ", e);
     return false;
   }
 }

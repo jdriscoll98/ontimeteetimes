@@ -1,0 +1,13 @@
+Picked up _JAVA_OPTIONS: -Xverify:none
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+This is the Google Pub/Sub fake.
+Implementation may be incomplete or differ from the real system.
+Aug 24, 2024 9:28:31 AM com.google.cloud.pubsub.testing.v1.Main main
+INFO: IAM integration is disabled. IAM policy methods and ACL checks are not supported
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Aug 24, 2024 9:28:31 AM com.google.cloud.pubsub.testing.v1.Main main
+INFO: Server started, listening on 8085
+Aug 24, 2024 9:28:37 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.

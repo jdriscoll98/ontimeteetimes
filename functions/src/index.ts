@@ -113,6 +113,7 @@ const bookEarliest = async () => {
       );
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
+    log(`Available tee times for ${date.format("MM/DD/YYYY")}`, teeTimes);
     const firstTeeTimes = teeTimes.slice(0, 2);
     // try to book the first 5 tee times
     const promises = firstTeeTimes.map((time: any) => {
@@ -120,6 +121,7 @@ const bookEarliest = async () => {
         {
           ...time,
           players: time.available_spots,
+          holes: "18",
         },
         data.data.jwt,
         data.headers["set-cookie"]
