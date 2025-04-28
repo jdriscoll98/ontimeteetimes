@@ -12,7 +12,7 @@ import { getSchedule } from "@/lib/openai";
 export function ScheduleForm() {
   const [loading, setLoading] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [value, setValue] = useState("next satuday before noon");
+  const [value, setValue] = useState("");
   const [previewSchedule, setPreviewSchedule] = useState<Schedule | null>(null);
 
   const onSubmit = async () => {

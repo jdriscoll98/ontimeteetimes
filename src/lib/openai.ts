@@ -8,8 +8,9 @@ const openai = new OpenAI({
 });
 
 export async function getSchedule(input: string): Promise<Schedule> {
-  // current date in est 
-  const currentDate = getCurrentDateInTimezone("America/New_York").split(" ")[0]
+  // current date in est
+  const currentDate =
+    getCurrentDateInTimezone("America/New_York").split(" ")[0];
 
   const response = await openai.chat.completions.create({
     model: "gpt-4-turbo",
@@ -45,7 +46,7 @@ export async function getSchedule(input: string): Promise<Schedule> {
       players: number;
     };
     if (!requestedSchedule) throw new Error("No requested schedule");
-    const date = new Date();
+    const date = new Date(currentDate + "T12:00:00");
     date.setMonth(requestedSchedule.month - 1);
     date.setDate(requestedSchedule.date);
     if (date.getTime() < Date.now())
