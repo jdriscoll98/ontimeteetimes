@@ -118,6 +118,8 @@ export async function bookTime({ time, email }: { time: any; email: string }) {
           "Api-Key": "no_limits",
           "X-Authorization": `Bearer ${jwt}`,
           Cookie: cookie?.join("; "),
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
         },
       }
     );
@@ -139,6 +141,8 @@ export async function bookTeeTimeWithAuth(
         "Api-Key": "no_limits",
         "X-Authorization": `Bearer ${token}`,
         Cookie: cookie?.join("; "),
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
       },
     });
     return true;

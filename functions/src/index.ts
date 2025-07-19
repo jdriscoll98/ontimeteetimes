@@ -82,20 +82,26 @@ export const scheduleTasks = onSchedule("*/5 * * * *", async () => {
 const bookEarliest = async () => {
   try {
     const data = await getAuthToken({
-      email: "wsilva0921@gmail.com",
+      email: "jackdriscoll777@gmail.com",
       password: "Golf123",
     });
-    // const data = await getAuthToken({
-    //   email: "Jackdriscoll777@gmail.com",
-    //   password: "Golf123",
-    // });
 
     let date: dayjs.Dayjs | string = dayjs(new Date())
       .add(1, "day")
       .add(3, "week");
 
     let teeTimes = [];
+    let attempts = 0;
     while (!teeTimes.length) {
+      log(
+        `Waiting for tee times to be available, current time is ${dayjs().format(
+          "HH:mm"
+        )}`
+      );
+      if (attempts > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      attempts++;
       teeTimes = await getAllTeeTimes({
         booking_class_id: BEACH_PASS_ID,
         date: date.toDate().toLocaleDateString("en-us", {
@@ -106,22 +112,38 @@ const bookEarliest = async () => {
         }),
         auth: { jwt: data.data.jwt, cookie: data.headers["set-cookie"] },
       });
-      log(
-        `Waiting for tee times to be available, current time is ${dayjs().format(
-          "HH:mm"
-        )}`
-      );
-      await new Promise((resolve) => setTimeout(resolve, 500));
     }
     log(`Available tee times for ${date.format("MM/DD/YYYY")}`, teeTimes);
-    const firstTeeTimes = teeTimes.slice(0, 2);
-    // try to book the first 5 tee times
+
+    // Filter tee times after 6pm (18:00)
+    const teeTimesAfter6pm = teeTimes.filter((tt: any) => {
+      log(tt.time);
+      const teeTimeHour = dayjs(tt.time).hour();
+      return teeTimeHour >= 18;
+    });
+
+    // Sort by time ascending
+    log("teeTimesAfter6pm", teeTimesAfter6pm);
+    // Determine if weekend or weekday
+    const dayOfWeek = dayjs(date).day(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    log("isWeekend", isWeekend);
+    let numToBook = 1;
+    if (isWeekend) {
+      numToBook = 2; // Weekend
+    }
+
+    const firstTeeTimes = (isWeekend ? teeTimes : teeTimesAfter6pm).slice(
+      0,
+      numToBook
+    );
+    // try to book the first 1 or 2 tee times
     const promises = firstTeeTimes.map((time: any) => {
       return bookTeeTimeWithAuth(
         {
           ...time,
           players: time.available_spots,
-          holes: "18",
+          holes: isWeekend ? "18" : "9",
         },
         data.data.jwt,
         data.headers["set-cookie"]
@@ -152,8 +174,7 @@ const bookEarliest = async () => {
 
 export const scheduleBookEarliest = onSchedule(
   {
-    // schedule: "59 18 * * 4-6", // thurs-saturday
-    schedule: "59 18 * * 4-6",
+    schedule: "59 18 * * *", // every day at 6:59pm
     timeZone: "America/New_York",
     timeoutSeconds: 540,
   },
