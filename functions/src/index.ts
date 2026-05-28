@@ -103,7 +103,7 @@ const bookEarliest = async () => {
 
 export const scheduleBookEarliest = onSchedule(
   {
-    schedule: "59 3 * * *",
+    schedule: "59 23 * * *",
     timeZone: "America/New_York",
     timeoutSeconds: 540,
   },
