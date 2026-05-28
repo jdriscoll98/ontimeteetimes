@@ -1,13 +1,15 @@
-import axios from "axios";
 import { getAuth } from "./firebase";
-import { error } from "firebase-functions/logger";
-
-const LOGIN_URL =
-  "https://foreupsoftware.com/index.php/api/booking/users/login";
-const RESERVATION_URL =
-  "https://foreupsoftware.com/index.php/api/booking/users/reservations";
-const TIMES_URL = (date: string, booking_class_id: number) =>
-  `https://foreupsoftware.com/index.php/api/booking/times?time=all&date=${date}&holes=all&players=0&booking_class=${booking_class_id}&schedule_id=2912&schedule_ids%5B%5D=2912&specials_only=0&api_key=no_limits`;
+import {
+  login,
+  searchSlots,
+  bookEighteen,
+  cancelReservation,
+  pairBackNine,
+  EagleLoginResult,
+  EagleSession,
+  EagleSlot,
+  EagleReservation,
+} from "./eagle";
 
 export async function getAuthToken({
   email,
@@ -15,139 +17,81 @@ export async function getAuthToken({
 }: {
   email: string;
   password: string;
-}): Promise<{
-  data: { jwt: string; reservations: any[]; booking_class_ids: number[] };
-  headers: { "set-cookie"?: string[] | undefined };
-}> {
-  const formData = new FormData();
-  formData.append("username", email);
-  formData.append("password", password);
-  formData.append("booking_class_id", "");
-  formData.append("api_key", "no_limits");
-  formData.append("course_id", "19905");
-  const res = await axios.post(LOGIN_URL, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return res;
+}): Promise<EagleLoginResult> {
+  return login({ email, password });
 }
 
-export async function getBookings({ email }: { email: string }) {
-  const auth = await getAuth({ email });
-  if (!auth) return null;
-  const {
-    data: { reservations },
-  } = await getAuthToken(auth);
-  return [...reservations];
+export async function getAllTeeTimes({
+  date,
+  session,
+}: {
+  date: string;
+  session: EagleSession;
+}): Promise<EagleSlot[]> {
+  return searchSlots(session, date);
+}
+
+export async function bookTime({
+  time,
+  email,
+  players,
+}: {
+  time: EagleSlot;
+  email: string;
+  players: number;
+}): Promise<{ success: boolean; e?: Error }> {
+  const creds = await getAuth({ email });
+  if (!creds) return { success: false, e: new Error(`no auth for ${email}`) };
+  const { session } = await login(creds);
+  const slots = await searchSlots(session, time.date);
+  const back = pairBackNine(slots, time);
+  if (!back) return { success: false, e: new Error("no back-9 pair") };
+  const res = await bookEighteen(session, time, back, players);
+  if (res.success) return { success: true };
+  return { success: false, e: new Error(res.error) };
+}
+
+export async function bookTeeTimeWithAuth(
+  front: EagleSlot,
+  session: EagleSession,
+  allSlots: EagleSlot[],
+  players: number
+): Promise<boolean> {
+  const back = pairBackNine(allSlots, front);
+  if (!back) return false;
+  const res = await bookEighteen(session, front, back, players);
+  return res.success;
+}
+
+export async function getBookings({
+  email,
+}: {
+  email: string;
+}): Promise<EagleReservation[] | null> {
+  const creds = await getAuth({ email });
+  if (!creds) return null;
+  const { reservations } = await login(creds);
+  return reservations;
 }
 
 export async function cancelBooking({
   email,
-  id,
+  appointmentDetailId,
+  appointmentSlotDetailId,
 }: {
   email: string;
-  id: string;
-}) {
-  // delete request to the reservation url with the id
-  const auth = await getAuth({ email });
-  if (!auth) return null;
-  const {
-    data: { jwt },
-    headers: { "set-cookie": cookie },
-  } = await getAuthToken(auth);
-  const res = await axios.delete(`${RESERVATION_URL}/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-      "Api-Key": "no_limits",
-      Cookie: cookie?.join("; "),
-    },
-  });
-  return res.data;
-}
-
-export async function getAllTeeTimes({
-  booking_class_id,
-  date,
-  auth,
-}: {
-  booking_class_id: number;
-  date: string;
-  auth?: { jwt: string; cookie?: string[] };
-}) {
-  const url = `${TIMES_URL(date, booking_class_id)}`;
-  try {
-    const res = await axios.get(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "Api-Key": "no_limits",
-        ...(auth?.jwt && {
-          "X-Authorization": `Bearer ${auth?.jwt}`,
-        }),
-        ...(auth?.cookie && {
-          Cookie: auth?.cookie?.join("; "),
-        }),
-      },
-    });
-    return res.data;
-  } catch (e) {
-    error("Error getting tee times with url: ", url, e);
-    return [];
-  }
-}
-
-export async function bookTime({ time, email }: { time: any; email: string }) {
-  try {
-    const auth = await getAuth({ email });
-    if (!auth) return null;
-    const {
-      data: { jwt },
-      headers: { "set-cookie": cookie },
-    } = await getAuthToken(auth);
-    await axios.post(
-      RESERVATION_URL,
-      {
-        ...time,
-        players: time.available_spots,
-        holes: "18",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Api-Key": "no_limits",
-          "X-Authorization": `Bearer ${jwt}`,
-          Cookie: cookie?.join("; "),
-          "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        },
-      }
-    );
-    return { success: true };
-  } catch (e) {
-    return { success: false, e };
-  }
-}
-
-export async function bookTeeTimeWithAuth(
-  teeTime: any,
-  token: string,
-  cookie?: string[]
-) {
-  try {
-    await axios.post(RESERVATION_URL, teeTime, {
-      headers: {
-        "Content-Type": "application/json",
-        "Api-Key": "no_limits",
-        "X-Authorization": `Bearer ${token}`,
-        Cookie: cookie?.join("; "),
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-      },
-    });
-    return true;
-  } catch (e) {
-    error("Error booking tee time: ", e);
-    return false;
-  }
+  appointmentDetailId: number;
+  appointmentSlotDetailId: number;
+}): Promise<{ success: boolean }> {
+  const creds = await getAuth({ email });
+  if (!creds) return { success: false };
+  const { session, reservations } = await login(creds);
+  const target = reservations.find(
+    (r) =>
+      r.appointmentDetailId === appointmentDetailId &&
+      r.appointmentSlotDetailId === appointmentSlotDetailId
+  );
+  if (!target) return { success: false };
+  const ok = await cancelReservation(session, target);
+  return { success: ok };
 }

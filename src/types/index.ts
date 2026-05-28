@@ -1,7 +1,7 @@
 export interface Schedule {
-    date: number;
-    after: number;
-    before: number;
-    email: string;
-    players: number;
+  date: number;
+  after: string;
+  before: string;
+  email: string;
+  players: number;
 }

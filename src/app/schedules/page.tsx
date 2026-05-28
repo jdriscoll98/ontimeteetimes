@@ -14,6 +14,11 @@ import { deleteSchedule, getSchedules } from "@/lib/firebase";
 import { Schedule } from "@/types";
 import { XCircle } from "lucide-react";
 import React, { useEffect } from "react";
+
+function formatHHMM(hhmm: string): string {
+  return `${hhmm.slice(0, 2)}:${hhmm.slice(2, 4)}`;
+}
+
 const Page = () => {
   const [schedules, setSchedules] = React.useState<Schedule[] | undefined>(
     undefined
@@ -64,8 +69,8 @@ const Page = () => {
                         })}
                       </NeoTableCell>
                       <NeoTableCell>{schedule.players}</NeoTableCell>
-                      <NeoTableCell>{schedule.after}:00</NeoTableCell>
-                      <NeoTableCell>{schedule.before}:00</NeoTableCell>
+                      <NeoTableCell>{formatHHMM(schedule.after)}</NeoTableCell>
+                      <NeoTableCell>{formatHHMM(schedule.before)}</NeoTableCell>
                       <NeoTableCell>
                         <NeoButton
                           onClick={async () => {
