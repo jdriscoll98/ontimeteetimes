@@ -391,6 +391,7 @@ export async function cancelReservation(
           Forgive: false,
           LstInventory: [] as never[],
           LstInventoryCancelled: [] as never[],
+          SystemDateTime: `/Date(${Date.now()})/`,
         },
       ],
       LstAppointmentUpdateReturn: [] as never[],
