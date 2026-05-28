@@ -27,11 +27,19 @@ export const BACK_NINE_ID = 109;
 const DEFAULT_CARRIAGE_ID = 95;
 const GUEST_FALLBACK_PRICE_CLASS_ID = 85;
 
+export type EaglePass = {
+  masterId: number;
+  description: string;
+  onlineMaxDays: number;
+};
+
 export type EagleSession = {
   customerId: number;
+  email: string;
   priceClassId: number;
   searchPriceClassId: number;
   maxBookingDays: number;
+  pass: EaglePass | null;
   cookies?: string[];
 };
 
@@ -152,7 +160,7 @@ type LoginResponse = {
   customer?: {
     CustomerID: number;
     Master_TeePriceClassID: number;
-    LstTeePriceClass?: Array<{ MasterID: number; OnlineMaxDays: number }>;
+    LstTeePriceClass?: Array<{ MasterID: number; Description: string; OnlineMaxDays: number }>;
     LstCurrentReservations?: RawReservation[];
   };
 };
@@ -184,16 +192,21 @@ export async function login({
     throw new Error("Eagle login failed");
   }
 
-  const pass = customer.LstTeePriceClass?.[0];
-  const bookingClass = pass?.MasterID ?? customer.Master_TeePriceClassID;
-  const maxDays = pass?.OnlineMaxDays ?? 7;
+  const rawPass = customer.LstTeePriceClass?.[0];
+  const bookingClass = rawPass?.MasterID ?? customer.Master_TeePriceClassID;
+  const maxDays = rawPass?.OnlineMaxDays ?? 7;
+  const pass: EaglePass | null = rawPass
+    ? { masterId: rawPass.MasterID, description: rawPass.Description, onlineMaxDays: rawPass.OnlineMaxDays }
+    : null;
 
   return {
     session: {
       customerId: customer.CustomerID,
+      email,
       priceClassId: bookingClass,
       searchPriceClassId: customer.Master_TeePriceClassID,
       maxBookingDays: maxDays,
+      pass,
       cookies: res.headers["set-cookie"],
     },
     reservations: (customer.LstCurrentReservations ?? []).map(mapReservation),
@@ -237,6 +250,36 @@ function buildBookPayload(
   players: number,
   guestPriceClassId: number
 ) {
+  const bookerCustomer = {
+    CustomerID: session.customerId,
+    PersonID: session.customerId,
+    Person: {
+      PersonID: session.customerId,
+      CustomerID: session.customerId,
+      EMail: session.email,
+      SendEMail: true,
+      OnlineBooking: true,
+    },
+    OnlineBooking: true,
+    LstTeePriceClass: session.pass
+      ? [
+          {
+            MasterID: session.pass.masterId,
+            CustomerID: 0,
+            Description: session.pass.description,
+            OnlineMaxDays: session.pass.onlineMaxDays,
+          },
+        ]
+      : [],
+  };
+  const guestCustomer = {
+    CustomerID: 0,
+    PersonID: 0,
+    Person: { PersonID: 0, CustomerID: 0, EMail: "", SendEMail: false, OnlineBooking: true },
+    OnlineBooking: true,
+    LstTeePriceClass: [],
+  };
+
   const items = Array.from({ length: players }, (_, i) => ({
     AppointmentSlotID: front.playerSlotIds[i],
     AppointmentSlotDetailID: 0,
@@ -272,11 +315,13 @@ function buildBookPayload(
     CheckIn: false,
     Person_WhoBookedID: 0,
     Person_GuestOfID: i === 0 ? 0 : session.customerId,
+    Customer: i === 0 ? bookerCustomer : guestCustomer,
     Telephone: "",
     Master_CarriageID: DEFAULT_CARRIAGE_ID,
     OnlineBooking: true,
     BookedOnline: true,
     Players: 0,
+    SystemDateTime: `/Date(${Date.now()})/`,
   }));
 
   const returns = items.flatMap(() => [
